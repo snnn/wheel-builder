@@ -5,13 +5,19 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-
-    steps:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8]
+    steps:    
     - uses: actions/checkout@v2
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: Run a multi-line script
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
       run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
+        python -m pip install --upgrade pip
+        pip install numpy=1.6.0 wheel    
+    - name: Build wheel
+      run: python setup.py bdist_wheel    
